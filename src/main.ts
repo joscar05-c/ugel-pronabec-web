@@ -4,6 +4,10 @@ import { provideHttpClient } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { inject } from '@vercel/analytics';
+
+inject();
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(),

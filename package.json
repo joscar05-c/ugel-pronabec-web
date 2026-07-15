@@ -19,6 +19,7 @@
     "@angular/router": "^21.2.0",
     "@supabase/supabase-js": "^2.110.5",
     "@tailwindcss/postcss": "^4.3.2",
+    "@vercel/analytics": "^2.0.1",
     "postcss": "^8.5.19",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.3.2",
