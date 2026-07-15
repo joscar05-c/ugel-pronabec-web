@@ -9,412 +9,390 @@ import * as XLSX from 'xlsx';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div
-      *ngIf="vistaActual === 'registro'"
-      class="container"
-      style="padding: 2rem; max-width: 800px; margin: auto; font-family: sans-serif;"
-    >
-      <div style="text-align: right; margin-bottom: 1rem;">
-        <button
-          (click)="cambiarVista('loginAdmin')"
-          style="background: transparent; border: 1px solid #ccc; color: #666; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;"
-        >
-          Acceso UGEL
-        </button>
+    <div *ngIf="vistaActual === 'registro'" class="min-h-screen flex flex-col items-center py-10 px-4">
+
+      <div class="w-full max-w-3xl mb-6 text-center">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 tracking-tight">UGEL Angaraes</h1>
+        <p class="text-lg text-gray-600 mt-2 font-medium">Padrón de Beneficiarios - PRONABEC</p>
       </div>
 
-      <h2>Registro PRONABEC - UGEL Angaraes</h2>
+      <div class="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
 
-      <div style="margin-bottom: 2rem;">
-        <label>Ingrese su DNI:</label>
-        <input
-          type="text"
-          [(ngModel)]="dniBusqueda"
-          placeholder="Ej: 09951386"
-          style="margin-left: 10px; padding: 5px;"
-        />
-        <button
-          (click)="buscar()"
-          [disabled]="cargando"
-          style="margin-left: 10px; padding: 5px 15px;"
-        >
-          {{ cargando ? 'Buscando...' : 'Buscar' }}
-        </button>
-      </div>
-
-      <div *ngIf="mensajeError" style="color: red; margin-bottom: 1rem;">{{ mensajeError }}</div>
-
-      <div *ngIf="trabajador" style="background: #f4f4f4; padding: 1.5rem; border-radius: 8px;">
-        <h3>Datos del Trabajador</h3>
-        <p>
-          <strong>Nombres:</strong> {{ trabajador.nombres }} {{ trabajador.apellido_paterno }}
-          {{ trabajador.apellido_materno }}
-        </p>
-        <p><strong>Cargo:</strong> {{ trabajador.cargo_estructura_nivel }}</p>
-
-        <hr style="margin: 1.5rem 0;" />
-
-        <div
-          *ngIf="trabajador.ya_registro"
-          style="background: #ffeeba; color: #856404; padding: 1rem; border-radius: 5px; border: 1px solid #ffe8a1;"
-        >
-          <strong>Aviso:</strong> Usted ya completó su registro anteriormente.
+        <div class="flex justify-end p-4 bg-gray-50 border-b border-gray-100">
+          <button (click)="cambiarVista('loginAdmin')" class="text-xs text-gray-500 hover:text-blue-600 transition-colors font-semibold flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Acceso Institucional
+          </button>
         </div>
 
-        <div *ngIf="!trabajador.ya_registro && !registroRecienCompletado">
-          <div
-            style="background: #e2e3e5; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;"
-          >
-            <h4 style="margin-top: 0;">Complete sus datos laborales:</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div>
-                <label>Condición Laboral:</label><br />
-                <select [(ngModel)]="condicionLaboral" style="width: 100%; padding: 5px;">
-                  <option value="">-- Seleccione --</option>
-                  <option value="NOMBRADO">NOMBRADO</option>
-                  <option value="CONTRATADO">CONTRATADO</option>
-                </select>
-              </div>
-              <div>
-                <label>Sede / Institución:</label><br />
-                <select [(ngModel)]="tipoSede" style="width: 100%; padding: 5px;">
-                  <option value="Sede Administrativa">Sede Administrativa</option>
-                  <option value="Institución Educativa">Institución Educativa</option>
-                </select>
-              </div>
-              <div *ngIf="tipoSede === 'Institución Educativa'" style="grid-column: 1 / -1;">
-                <label>Nombre de la Institución Educativa (IE):</label><br />
-                <input
-                  type="text"
-                  [(ngModel)]="nombreIE"
-                  placeholder="Ej: I.E. San Juan Bosco"
-                  style="width: 100%; padding: 5px;"
-                />
-              </div>
+        <div class="p-6 md:p-8">
+
+          <div class="mb-8">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Ingrese el DNI del Trabajador:</label>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input type="text" [(ngModel)]="dniBusqueda" placeholder="Ej: 09951386"
+                class="flex-1 rounded-lg border-gray-300 shadow-sm px-4 py-3 border focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-700">
+              <button (click)="buscar()" [disabled]="cargando"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all disabled:opacity-50 flex justify-center items-center">
+                {{ cargando ? 'Buscando...' : 'Buscar Trabajador' }}
+              </button>
+            </div>
+            <div *ngIf="mensajeError" class="mt-3 text-sm text-red-600 font-medium flex items-center gap-1">
+              {{ mensajeError }}
             </div>
           </div>
 
+          <div *ngIf="trabajador" class="animate-fade-in-up">
+            <div class="bg-blue-50 rounded-lg p-5 border border-blue-100 mb-6">
+              <h3 class="text-lg font-bold text-blue-900 mb-3 border-b border-blue-200 pb-2">Datos del Trabajador</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><span class="text-gray-500 block">Nombres y Apellidos:</span> <span class="font-semibold text-gray-800">{{ trabajador.nombres }} {{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }}</span></div>
+                <div><span class="text-gray-500 block">Cargo:</span> <span class="font-semibold text-gray-800">{{ trabajador.cargo_estructura_nivel }}</span></div>
+              </div>
+            </div>
+
+            <div *ngIf="trabajador.ya_registro" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6 text-yellow-800">
+              <strong class="font-bold">Aviso:</strong> Usted ya completó su registro anteriormente.
+            </div>
+
+            <div *ngIf="!trabajador.ya_registro && !registroRecienCompletado">
+
+              <div class="bg-gray-50 p-5 md:p-6 rounded-xl border border-gray-200 mb-8 shadow-sm">
+                <h4 class="text-md font-bold text-gray-800 mb-4 border-b pb-2">Complete sus datos laborales:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Condición Laboral:</label>
+                    <select [(ngModel)]="condicionLaboral" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                      <option value="">-- Seleccione --</option>
+                      <option value="NOMBRADO">NOMBRADO</option>
+                      <option value="CONTRATADO">CONTRATADO</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sede / Institución:</label>
+                    <select [(ngModel)]="tipoSede" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                      <option value="Sede Administrativa">Sede Administrativa</option>
+                      <option value="Institución Educativa">Institución Educativa</option>
+                    </select>
+                  </div>
+                  <div *ngIf="tipoSede === 'Institución Educativa'" class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la Institución Educativa (IE):</label>
+                    <input type="text" [(ngModel)]="nombreIE" placeholder="Ej: I.E. San Juan Bosco"
+                      class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 flex flex-wrap items-center bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                <label class="font-bold text-gray-800 mr-4">¿Cuántos hijos tiene entre 14 y 23 años?</label>
+                <input type="number" min="0" max="10" [(ngModel)]="cantidadHijos" (ngModelChange)="generarFormularios()"
+                  class="w-20 rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-center font-bold text-lg" />
+              </div>
+
+              <div *ngIf="cantidadHijos > 0" class="space-y-6">
+                <div *ngFor="let hijo of hijosForm; let i = index" class="bg-white border border-gray-200 rounded-xl p-5 md:p-6 shadow-sm relative overflow-hidden">
+                  <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+
+                  <h4 class="text-lg font-bold text-blue-800 mb-5 pb-2 border-b">Datos del Hijo {{ i + 1 }}</h4>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Nombres y Apellidos:</label>
+                      <input type="text" [(ngModel)]="hijo.nombres_apellidos_hijo" class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Edad:</label>
+                      <input type="number" min="14" max="23" [(ngModel)]="hijo.edad" class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Grado de Estudios:</label>
+                      <select [(ngModel)]="hijo.grado_estudios" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="Secundaria">Secundaria</option>
+                        <option value="Superior No Universitaria">Superior No Universitaria</option>
+                        <option value="Superior Universitaria">Superior Universitaria</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Tipo Gestión IE:</label>
+                      <select [(ngModel)]="hijo.tipo_gestion_ie" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="Pública">Pública</option>
+                        <option value="Privada">Privada</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Clasificación SISFOH:</label>
+                      <select [(ngModel)]="hijo.sisfoh" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="No Pobre">No Pobre</option>
+                        <option value="Pobre">Pobre</option>
+                        <option value="Pobre Extremo">Pobre Extremo</option>
+                      </select>
+                    </div>
+
+                    <!-- LÓGICA DE BECAS -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">¿Cuenta con Beca?</label>
+                      <select
+                        [(ngModel)]="hijo.tiene_beca_opcion"
+                        (change)="hijo.tiene_beca = hijo.tiene_beca_opcion === 'NO' ? 'NO' : ''"
+                        class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                      </select>
+                      <input
+                        *ngIf="hijo.tiene_beca_opcion === 'SI'"
+                        type="text"
+                        [(ngModel)]="hijo.tiene_beca"
+                        placeholder="Especifique nombre de beca"
+                        class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                    </div>
+
+                    <!-- LÓGICA DISCAPACIDAD -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">¿Discapacidad?</label>
+                      <select
+                        [(ngModel)]="hijo.discapacidad_opcion"
+                        (change)="hijo.discapacidad = hijo.discapacidad_opcion === 'NO' ? 'NO' : ''"
+                        class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                      </select>
+                      <input
+                        *ngIf="hijo.discapacidad_opcion === 'SI'"
+                        type="text"
+                        [(ngModel)]="hijo.discapacidad"
+                        placeholder="Especifique discapacidad"
+                        class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                    </div>
+
+                    <!-- LÓGICA PUEBLO INDÍGENA -->
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">¿Pueblo Indígena?</label>
+                      <select
+                        [(ngModel)]="hijo.pueblo_indigena_opcion"
+                        (change)="hijo.pueblo_indigena = hijo.pueblo_indigena_opcion === 'NO' ? 'NO' : ''"
+                        class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="NO">NO</option>
+                        <option value="SI">SI</option>
+                      </select>
+                      <input
+                        *ngIf="hijo.pueblo_indigena_opcion === 'SI'"
+                        type="text"
+                        [(ngModel)]="hijo.pueblo_indigena"
+                        placeholder="Especifique pueblo"
+                        class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 flex justify-end" *ngIf="cantidadHijos >= 0">
+                <button (click)="guardarRegistro()" [disabled]="guardando"
+                  class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all disabled:opacity-50 text-lg w-full md:w-auto flex justify-center items-center">
+                  {{ guardando ? 'Guardando información...' : 'Finalizar Registro' }}
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="mensajeExito" class="mt-6 bg-green-50 border border-green-200 text-green-800 p-5 rounded-lg text-center shadow-sm animate-fade-in-up">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <strong class="block text-lg">{{ mensajeExito }}</strong>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 2: LOGIN ADMIN CON TAILWIND -->
+    <div *ngIf="vistaActual === 'loginAdmin'" class="min-h-screen flex items-center justify-center py-10 px-4">
+
+      <!-- Tarjeta de Login -->
+      <div class="max-w-md w-full bg-white rounded-xl shadow-xl p-8 border border-gray-100 relative overflow-hidden">
+
+        <!-- Adorno visual superior -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-blue-800"></div>
+
+        <div class="text-center mb-8 mt-2">
+          <h2 class="text-2xl font-extrabold text-gray-800">Acceso Administrativo</h2>
+          <p class="text-sm text-gray-500 mt-2">Panel de control exclusivo UGEL Angaraes</p>
+        </div>
+
+        <div class="space-y-5">
+          <!-- Campo Correo -->
           <div>
-            <label style="font-weight: bold;">¿Cuántos hijos tiene entre 14 y 23 años?</label>
-            <input
-              type="number"
-              min="0"
-              max="10"
-              [(ngModel)]="cantidadHijos"
-              (ngModelChange)="generarFormularios()"
-              style="margin-left: 10px; width: 60px; padding: 5px;"
-            />
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+            <input type="email" [(ngModel)]="emailAdmin" placeholder="admin@ugelangaraes.gob.pe"
+              class="w-full rounded-lg border-gray-300 px-4 py-3 border focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-700">
           </div>
 
-          <div *ngIf="cantidadHijos > 0" style="margin-top: 1.5rem;">
-            <div
-              *ngFor="let hijo of hijosForm; let i = index"
-              style="background: #e9ecef; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid #ccc;"
-            >
-              <h4>Datos del Hijo {{ i + 1 }}</h4>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div>
-                  <label>Nombres y Apellidos:</label><br /><input
-                    type="text"
-                    [(ngModel)]="hijo.nombres_apellidos_hijo"
-                    style="width: 100%; padding: 5px;"
-                  />
-                </div>
-                <div>
-                  <label>Edad:</label><br /><input
-                    type="number"
-                    min="14"
-                    max="23"
-                    [(ngModel)]="hijo.edad"
-                    style="width: 100%; padding: 5px;"
-                  />
-                </div>
-                <div>
-                  <label>Grado de Estudios:</label><br />
-                  <select [(ngModel)]="hijo.grado_estudios" style="width: 100%; padding: 5px;">
-                    <option value="Secundaria">Secundaria</option>
-                    <option value="Superior No Universitaria">Superior No Universitaria</option>
-                    <option value="Superior Universitaria">Superior Universitaria</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Tipo Gestión IE:</label><br />
-                  <select [(ngModel)]="hijo.tipo_gestion_ie" style="width: 100%; padding: 5px;">
-                    <option value="Pública">Pública</option>
-                    <option value="Privada">Privada</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Clasificación SISFOH:</label><br />
-                  <select [(ngModel)]="hijo.sisfoh" style="width: 100%; padding: 5px;">
-                    <option value="No Pobre">No Pobre</option>
-                    <option value="Pobre">Pobre</option>
-                    <option value="Pobre Extremo">Pobre Extremo</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label>¿Cuenta con Beca?</label><br />
-                  <select
-                    [(ngModel)]="hijo.tiene_beca_opcion"
-                    (change)="
-                      hijo.tiene_beca = hijo.tiene_beca_opcion === 'NO' ? 'NO' : hijo.tiene_beca
-                    "
-                    style="width: 100%; padding: 5px;"
-                  >
-                    <option value="NO">NO</option>
-                    <option value="SI">SI</option>
-                  </select>
-                  <input
-                    *ngIf="hijo.tiene_beca_opcion === 'SI'"
-                    type="text"
-                    [(ngModel)]="hijo.tiene_beca"
-                    placeholder="Especifique nombre de beca"
-                    style="width: 100%; padding: 5px; margin-top: 5px;"
-                  />
-                </div>
-
-                <div>
-                  <label>¿Discapacidad?</label><br />
-                  <select
-                    [(ngModel)]="hijo.discapacidad_opcion"
-                    (change)="
-                      hijo.discapacidad =
-                        hijo.discapacidad_opcion === 'NO' ? 'NO' : hijo.discapacidad
-                    "
-                    style="width: 100%; padding: 5px;"
-                  >
-                    <option value="NO">NO</option>
-                    <option value="SI">SI</option>
-                  </select>
-                  <input
-                    *ngIf="hijo.discapacidad_opcion === 'SI'"
-                    type="text"
-                    [(ngModel)]="hijo.discapacidad"
-                    placeholder="Especifique discapacidad"
-                    style="width: 100%; padding: 5px; margin-top: 5px;"
-                  />
-                </div>
-
-                <div>
-                  <label>¿Pueblo Indígena?</label><br />
-                  <select
-                    [(ngModel)]="hijo.pueblo_indigena_opcion"
-                    (change)="
-                      hijo.pueblo_indigena =
-                        hijo.pueblo_indigena_opcion === 'NO' ? 'NO' : hijo.pueblo_indigena
-                    "
-                    style="width: 100%; padding: 5px;"
-                  >
-                    <option value="NO">NO</option>
-                    <option value="SI">SI</option>
-                  </select>
-                  <input
-                    *ngIf="hijo.pueblo_indigena_opcion === 'SI'"
-                    type="text"
-                    [(ngModel)]="hijo.pueblo_indigena"
-                    placeholder="Especifique pueblo"
-                    style="width: 100%; padding: 5px; margin-top: 5px;"
-                  />
-                </div>
-              </div>
-            </div>
+          <!-- Campo Contraseña -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+            <input type="password" [(ngModel)]="passwordAdmin" placeholder="••••••••"
+              class="w-full rounded-lg border-gray-300 px-4 py-3 border focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-700">
           </div>
 
-          <div style="margin-top: 2rem;" *ngIf="cantidadHijos >= 0">
-            <button
-              (click)="guardarRegistro()"
-              [disabled]="guardando"
-              style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"
-            >
-              {{ guardando ? 'Guardando...' : 'Finalizar Registro' }}
-            </button>
+          <!-- Mensaje de Error Estilizado -->
+          <div *ngIf="errorLogin" class="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-100 flex items-center justify-center gap-2 animate-fade-in-up">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ errorLogin }}
           </div>
+
+          <!-- Botón de Ingreso -->
+          <button (click)="verificarLogin()"
+            class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-all mt-2">
+            Ingresar Seguramente
+          </button>
         </div>
 
-        <div
-          *ngIf="mensajeExito"
-          style="color: #155724; background: #d4edda; margin-top: 1.5rem; padding: 1rem; border-radius: 5px; border: 1px solid #c3e6cb; font-weight: bold; text-align: center;"
-        >
-          {{ mensajeExito }}
+        <!-- Botón de Retorno -->
+        <div class="mt-8 text-center border-t border-gray-100 pt-5">
+          <button (click)="cambiarVista('registro')" class="text-sm text-gray-500 hover:text-blue-700 font-medium transition-colors">
+            ← Volver al buscador de DNI
+          </button>
         </div>
       </div>
     </div>
 
-    <div
-      *ngIf="vistaActual === 'loginAdmin'"
-      class="container"
-      style="padding: 4rem 2rem; max-width: 400px; margin: auto; font-family: sans-serif; text-align: center;"
-    >
-      <h3>Acceso Administrativo</h3>
-      <input
-        type="email"
-        [(ngModel)]="emailAdmin"
-        placeholder="Correo electrónico"
-        style="padding: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box;"
-      />
-      <input
-        type="password"
-        [(ngModel)]="passwordAdmin"
-        placeholder="Contraseña"
-        style="padding: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box;"
-      />
-      <button
-        (click)="verificarLogin()"
-        style="background: #0056b3; color: white; padding: 10px; width: 100%; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px;"
-      >
-        Ingresar Seguramente
-      </button>
-      <button
-        (click)="cambiarVista('registro')"
-        style="background: transparent; color: #666; border: none; text-decoration: underline; cursor: pointer;"
-      >
-        Volver al Registro
-      </button>
-      <div *ngIf="errorLogin" style="color: red; margin-top: 10px;">{{ errorLogin }}</div>
-    </div>
+    <div *ngIf="vistaActual === 'admin'" class="min-h-screen py-10 px-4 w-full max-w-7xl mx-auto">
 
-    <div
-      *ngIf="vistaActual === 'admin'"
-      class="container"
-      style="padding: 2rem; max-width: 1000px; margin: auto; font-family: sans-serif;"
-    >
-      <div
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;"
-      >
-        <h2>Dashboard - PRONABEC UGEL Angaraes</h2>
-        <button
-          (click)="salirAdmin()"
-          style="background: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;"
-        >
-          Cerrar Sesión
-        </button>
-      </div>
-
-      <div style="text-align: right; margin-bottom: 1.5rem;">
-        <button
-          (click)="exportarExcel()"
-          style="background: #198754; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;"
-        >
-          Exportar a Excel
-        </button>
-      </div>
-
-      <div
-        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 2rem;"
-      >
-        <div
-          style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border-left: 5px solid #007bff; text-align: center;"
-        >
-          <h4 style="margin: 0; color: #6c757d;">Total Trabajadores</h4>
-          <h1 style="margin: 10px 0 0 0; color: #007bff;">{{ statsAdmin.total }}</h1>
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">Dashboard Institucional</h2>
+          <p class="text-gray-500 font-medium mt-1">Padrón PRONABEC - UGEL Angaraes</p>
         </div>
-        <div
-          style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border-left: 5px solid #28a745; text-align: center;"
-        >
-          <h4 style="margin: 0; color: #6c757d;">Ya Registraron</h4>
-          <h1 style="margin: 10px 0 0 0; color: #28a745;">{{ statsAdmin.registrados }}</h1>
-        </div>
-        <div
-          style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border-left: 5px solid #dc3545; text-align: center;"
-        >
-          <h4 style="margin: 0; color: #6c757d;">Faltan Registrar</h4>
-          <h1 style="margin: 10px 0 0 0; color: #dc3545;">{{ statsAdmin.faltantes }}</h1>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <button (click)="exportarExcel()" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-5 rounded-lg shadow-md transition-all flex justify-center items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Exportar Excel
+          </button>
+          <button (click)="salirAdmin()" class="w-full md:w-auto bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 px-5 rounded-lg transition-all flex justify-center items-center gap-2 border border-red-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            Salir
+          </button>
         </div>
       </div>
 
-      <h3>Detalle por Trabajador</h3>
-      <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; background: white;">
-          <thead>
-            <tr style="background: #343a40; color: white;">
-              <th style="padding: 10px; border: 1px solid #dee2e6;">DNI</th>
-              <th style="padding: 10px; border: 1px solid #dee2e6;">Apellidos y Nombres</th>
-              <th style="padding: 10px; border: 1px solid #dee2e6;">Cargo</th>
-              <th style="padding: 10px; border: 1px solid #dee2e6;">Sede / Condición</th>
-              <th style="padding: 10px; border: 1px solid #dee2e6;">Estado</th>
-              <th style="padding: 10px; border: 1px solid #dee2e6;">Hijos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let tr of listaTrabajadoresAdmin">
-              <tr style="border-bottom: 1px solid #dee2e6;">
-                <td style="padding: 10px; border: 1px solid #dee2e6;">{{ tr.numero_documento }}</td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">
-                  {{ tr.apellido_paterno }} {{ tr.apellido_materno }}, {{ tr.nombres }}
-                </td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">
-                  {{ tr.cargo_estructura_nivel }}
-                </td>
-                <td style="padding: 10px; border: 1px solid #dee2e6;">
-                  <span style="display:block; font-size: 11px; color: #666;">{{
-                    tr.condicion_laboral || '-'
-                  }}</span>
-                  <strong style="font-size: 12px;">{{ tr.sede_actual || '-' }}</strong>
-                </td>
-                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
-                  <span
-                    *ngIf="tr.ya_registro"
-                    style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 12px; font-size: 12px;"
-                    >Completado</span
-                  >
-                  <span
-                    *ngIf="!tr.ya_registro"
-                    style="background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 12px; font-size: 12px;"
-                    >Pendiente</span
-                  >
-                </td>
-                <td style="padding: 10px; border: 1px solid #dee2e6; text-align: center;">
-                  <strong style="margin-right: 10px;">{{ extraerCantidadHijos(tr) }}</strong>
-                  <button
-                    *ngIf="extraerCantidadHijos(tr) > 0"
-                    (click)="toggleHijos(tr)"
-                    style="background: #17a2b8; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;"
-                  >
-                    {{ tr.mostrarHijos ? 'Ocultar ▲' : 'Ver Detalles ▼' }}
-                  </button>
-                </td>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 flex flex-col relative overflow-hidden">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Trabajadores</span>
+          <span class="text-4xl font-extrabold text-blue-600">{{ statsAdmin.total }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 flex flex-col relative overflow-hidden">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Ya Registraron</span>
+          <span class="text-4xl font-extrabold text-green-600">{{ statsAdmin.registrados }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500 flex flex-col relative overflow-hidden">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Faltan Registrar</span>
+          <span class="text-4xl font-extrabold text-red-600">{{ statsAdmin.faltantes }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+          <h3 class="text-lg font-bold text-gray-800">Detalle por Trabajador</h3>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-gray-800 text-white">
+              <tr>
+                <th class="px-6 py-4 font-semibold tracking-wide">DNI</th>
+                <th class="px-6 py-4 font-semibold tracking-wide">Apellidos y Nombres</th>
+                <th class="px-6 py-4 font-semibold tracking-wide">Cargo</th>
+                <th class="px-6 py-4 font-semibold tracking-wide">Sede / Condición</th>
+                <th class="px-6 py-4 font-semibold tracking-wide text-center">Estado</th>
+                <th class="px-6 py-4 font-semibold tracking-wide text-center">Hijos</th>
               </tr>
-              <tr
-                *ngIf="tr.mostrarHijos && extraerCantidadHijos(tr) > 0"
-                style="background: #f8f9fa;"
-              >
-                <td colspan="6" style="padding: 15px; border: 1px solid #dee2e6; border-top: none;">
-                  <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                    <thead>
-                      <tr style="background: #e9ecef; color: #495057;">
-                        <th style="padding: 8px; border: 1px solid #dee2e6;">
-                          Nombres y Apellidos
-                        </th>
-                        <th style="padding: 8px; border: 1px solid #dee2e6;">Edad</th>
-                        <th style="padding: 8px; border: 1px solid #dee2e6;">Beca</th>
-                        <th style="padding: 8px; border: 1px solid #dee2e6;">Discapacidad</th>
-                        <th style="padding: 8px; border: 1px solid #dee2e6;">Pueblo Indígena</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let hijo of tr.hijos">
-                        <td style="padding: 8px; border: 1px solid #dee2e6;">
-                          {{ hijo.nombres_apellidos_hijo }}
-                        </td>
-                        <td style="padding: 8px; border: 1px solid #dee2e6;">{{ hijo.edad }}</td>
-                        <td style="padding: 8px; border: 1px solid #dee2e6;">
-                          {{ hijo.tiene_beca }}
-                        </td>
-                        <td style="padding: 8px; border: 1px solid #dee2e6;">
-                          {{ hijo.discapacidad }}
-                        </td>
-                        <td style="padding: 8px; border: 1px solid #dee2e6;">
-                          {{ hijo.pueblo_indigena }}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <ng-container *ngFor="let tr of listaTrabajadoresAdmin">
+
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 font-medium text-gray-900">{{ tr.numero_documento }}</td>
+                  <td class="px-6 py-4 text-gray-700">
+                    <div class="font-bold">{{ tr.apellido_paterno }} {{ tr.apellido_materno }}</div>
+                    <div class="text-gray-500">{{ tr.nombres }}</div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-700 truncate max-w-xs" title="{{ tr.cargo_estructura_nivel }}">
+                    {{ tr.cargo_estructura_nivel }}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="block text-xs text-gray-500 font-semibold mb-0.5">{{ tr.condicion_laboral || '-' }}</span>
+                    <span class="block text-sm text-gray-800 font-bold truncate max-w-[200px]" title="{{ tr.sede_actual }}">{{ tr.sede_actual || '-' }}</span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <span *ngIf="tr.ya_registro" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                      Completado
+                    </span>
+                    <span *ngIf="!tr.ya_registro" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                      Pendiente
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex items-center justify-center gap-3">
+                      <span class="font-extrabold text-gray-700 text-base">{{ extraerCantidadHijos(tr) }}</span>
+                      <button *ngIf="extraerCantidadHijos(tr) > 0" (click)="toggleHijos(tr)"
+                        class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-transparent px-3 py-1.5 rounded text-xs font-bold transition-all min-w-[100px]">
+                        {{ tr.mostrarHijos ? 'Ocultar ▲' : 'Ver Detalles ▼' }}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr *ngIf="tr.mostrarHijos && extraerCantidadHijos(tr) > 0" class="bg-gray-50 border-b border-gray-200">
+                  <td colspan="6" class="px-8 py-5">
+
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                      <table class="min-w-full text-sm text-left whitespace-nowrap">
+                        <thead class="bg-gray-100 text-gray-600">
+                          <tr>
+                            <th class="px-4 py-3 font-bold border-b">Nombres y Apellidos del Hijo</th>
+                            <th class="px-4 py-3 font-bold border-b text-center">Edad</th>
+                            <th class="px-4 py-3 font-bold border-b">Beca</th>
+                            <th class="px-4 py-3 font-bold border-b">Discapacidad</th>
+                            <th class="px-4 py-3 font-bold border-b">Pueblo Indígena</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                          <tr *ngFor="let hijo of tr.hijos" class="hover:bg-gray-50">
+                            <td class="px-4 py-3 font-medium text-gray-800">{{ hijo.nombres_apellidos_hijo }}</td>
+                            <td class="px-4 py-3 font-bold text-blue-600 text-center">{{ hijo.edad }}</td>
+                            <td class="px-4 py-3 text-gray-600">
+                              <span [ngClass]="hijo.tiene_beca === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.tiene_beca }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600">
+                              <span [ngClass]="hijo.discapacidad === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.discapacidad }}</span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600">
+                              <span [ngClass]="hijo.pueblo_indigena === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.pueblo_indigena }}</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </td>
+                </tr>
+
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
@@ -450,10 +428,23 @@ export class AppComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    // 1. Evaluamos la ruta cuando la página carga por primera vez
+    await this.evaluarRutaActual();
+
+    // 2. NUEVO: Nos "suscribimos" a los cambios del navegador (Botones Atrás / Adelante)
+    this.location.subscribe(async () => {
+      await this.evaluarRutaActual();
+    });
+  }
+
+  // Extraemos la lógica a esta función para poder reutilizarla
+  async evaluarRutaActual() {
+    // Leemos la sesión y la ruta
     const { data } = await this.supabaseService.obtenerSesion();
     const rutaActual = this.location.path();
 
     if (data?.session) {
+      // Si hay sesión y entra a /admin, va al panel
       if (rutaActual === '/admin') {
         this.vistaActual = 'admin';
         await this.cargarDashboard();
@@ -461,12 +452,15 @@ export class AppComponent implements OnInit {
         this.vistaActual = 'registro';
       }
     } else {
+      // Si no hay sesión y entra a /admin, pide login
       if (rutaActual === '/admin') {
         this.vistaActual = 'loginAdmin';
       } else {
         this.vistaActual = 'registro';
       }
     }
+
+    // Obligamos a Angular a redibujar la pantalla con el cambio
     this.cdr.detectChanges();
   }
 
