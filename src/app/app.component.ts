@@ -653,40 +653,45 @@ export class AppComponent implements OnInit {
   exportarExcel() {
     const datosPlanos: any[] = [];
 
-    this.listaTrabajadoresAdmin.forEach((tr) => {
+    this.listaTrabajadoresAdmin.forEach(tr => {
       const tieneHijos = tr.hijos && tr.hijos.length > 0;
-
+      
       if (tieneHijos) {
         tr.hijos.forEach((hijo: any) => {
+          // Lógica para formatear los campos SI/NO
+          const becaFormateada = hijo.tiene_beca !== 'NO' ? `SI (${hijo.tiene_beca})` : 'NO';
+          const discapacidadFormateada = hijo.discapacidad !== 'NO' ? `SI (${hijo.discapacidad})` : 'NO';
+          const indigenaFormateado = hijo.pueblo_indigena !== 'NO' ? `SI (${hijo.pueblo_indigena})` : 'NO';
+
           datosPlanos.push({
-            REGION: 'HUANCAVELICA',
+            'REGION': 'HUANCAVELICA',
             'DRE/UGEL/COLEGIO MILITAR': 'ANGARAES',
             'SEDE ADMINISTRATIVA O IE': tr.sede_actual || '-',
             'APELLIDOS Y NOMBRES DEL TRABAJADOR': `${tr.apellido_paterno} ${tr.apellido_materno}, ${tr.nombres}`,
-            DNI: tr.numero_documento,
+            'DNI': tr.numero_documento,
             'REGIMEN LABORAL': tr.regimen_laboral,
             'CONDICION LABORAL': tr.condicion_laboral || '-',
-            CARGO: tr.cargo_estructura_nivel,
+            'CARGO': tr.cargo_estructura_nivel,
             'Apellidos y nombres del hijo': hijo.nombres_apellidos_hijo,
             'Edad (14-23)': hijo.edad,
             'Grado de estudios': hijo.grado_estudios,
             'Tipo de gestión de la IE de estudios': hijo.tipo_gestion_ie,
             'Cuál es su clasificación en el SISFOH': hijo.sisfoh,
-            '¿Cuenta con beca?': hijo.tiene_beca,
-            'El hijo presenta alguna discapacidad': hijo.discapacidad,
-            'El hijo pertenece a pueblos indígenas u originarios': hijo.pueblo_indigena,
+            '¿Cuenta con beca?': becaFormateada,
+            'El hijo presenta alguna discapacidad': discapacidadFormateada,
+            'El hijo pertenece a pueblos indígenas u originarios': indigenaFormateado
           });
         });
       } else {
         datosPlanos.push({
-          REGION: 'HUANCAVELICA',
+          'REGION': 'HUANCAVELICA',
           'DRE/UGEL/COLEGIO MILITAR': 'ANGARAES',
           'SEDE ADMINISTRATIVA O IE': tr.sede_actual || '-',
           'APELLIDOS Y NOMBRES DEL TRABAJADOR': `${tr.apellido_paterno} ${tr.apellido_materno}, ${tr.nombres}`,
-          DNI: tr.numero_documento,
+          'DNI': tr.numero_documento,
           'REGIMEN LABORAL': tr.regimen_laboral,
           'CONDICION LABORAL': tr.condicion_laboral || '-',
-          CARGO: tr.cargo_estructura_nivel,
+          'CARGO': tr.cargo_estructura_nivel,
           'Apellidos y nombres del hijo': tr.ya_registro ? 'SIN HIJOS' : 'FALTA REGISTRAR',
           'Edad (14-23)': '-',
           'Grado de estudios': '-',
@@ -694,29 +699,15 @@ export class AppComponent implements OnInit {
           'Cuál es su clasificación en el SISFOH': '-',
           '¿Cuenta con beca?': '-',
           'El hijo presenta alguna discapacidad': '-',
-          'El hijo pertenece a pueblos indígenas u originarios': '-',
+          'El hijo pertenece a pueblos indígenas u originarios': '-'
         });
       }
     });
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosPlanos);
     ws['!cols'] = [
-      { wch: 15 },
-      { wch: 25 },
-      { wch: 30 },
-      { wch: 40 },
-      { wch: 10 },
-      { wch: 20 },
-      { wch: 20 },
-      { wch: 30 },
-      { wch: 40 },
-      { wch: 12 },
-      { wch: 20 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 25 },
-      { wch: 25 },
+      { wch: 15 }, { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 30 }, 
+      { wch: 40 }, { wch: 12 }, { wch: 20 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }
     ];
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
