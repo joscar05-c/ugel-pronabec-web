@@ -32,9 +32,9 @@ import * as XLSX from 'xlsx';
           <div class="mb-8">
             <label class="block text-sm font-semibold text-gray-700 mb-2">Ingrese el DNI del Trabajador:</label>
             <div class="flex flex-col sm:flex-row gap-3">
-              <input type="text" [(ngModel)]="dniBusqueda" placeholder="Ej: 09951386"
+              <input type="text" [(ngModel)]="dniBusqueda" placeholder="Ej: 09951386" maxlength="8" pattern="\d{8}"
                 class="flex-1 rounded-lg border-gray-300 shadow-sm px-4 py-3 border focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-700">
-              <button (click)="buscar()" [disabled]="cargando"
+              <button (click)="buscar()" [disabled]="cargando || dniBusqueda.length !== 8"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all disabled:opacity-50 flex justify-center items-center">
                 {{ cargando ? 'Buscando...' : 'Buscar Trabajador' }}
               </button>
