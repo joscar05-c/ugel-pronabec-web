@@ -1,0 +1,170 @@
+<div class="min-h-screen py-10 px-4 w-full max-w-7xl mx-auto">
+
+  <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">Dashboard Institucional</h2>
+      <p class="text-gray-500 font-medium mt-1">Padrón PRONABEC - UGEL Angaraes</p>
+    </div>
+
+    <div class="flex items-center gap-3 w-full md:w-auto">
+      <button (click)="exportarExcel()" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-5 rounded-lg shadow-md transition-all flex justify-center items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        Exportar Excel
+      </button>
+      <button (click)="onSalir()" class="w-full md:w-auto bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 px-5 rounded-lg transition-all flex justify-center items-center gap-2 border border-red-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 flex flex-col relative overflow-hidden">
+      <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total Trabajadores</span>
+      <span class="text-4xl font-extrabold text-blue-600">{{ statsAdmin.total }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 flex flex-col relative overflow-hidden">
+      <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Ya Registraron</span>
+      <span class="text-4xl font-extrabold text-green-600">{{ statsAdmin.registrados }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500 flex flex-col relative overflow-hidden">
+      <span class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Faltan Registrar</span>
+      <span class="text-4xl font-extrabold text-red-600">{{ statsAdmin.faltantes }}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-50 absolute -bottom-2 -right-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+      <h3 class="text-lg font-bold text-gray-800">Detalle por Trabajador</h3>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm whitespace-nowrap">
+        <thead class="bg-gray-800 text-white">
+          <tr>
+            <th class="px-6 py-4 font-semibold tracking-wide">DNI</th>
+            <th class="px-6 py-4 font-semibold tracking-wide">Apellidos y Nombres</th>
+            <th class="px-6 py-4 font-semibold tracking-wide">Cargo</th>
+            <th class="px-6 py-4 font-semibold tracking-wide">Sede / Condición</th>
+            <th class="px-6 py-4 font-semibold tracking-wide text-center">Estado</th>
+            <th class="px-6 py-4 font-semibold tracking-wide text-center">Hijos</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <ng-container *ngFor="let tr of trabajadoresPaginados">
+
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-medium text-gray-900">{{ tr.numero_documento }}</td>
+              <td class="px-6 py-4 text-gray-700">
+                <div class="font-bold">{{ tr.apellido_paterno }} {{ tr.apellido_materno }}</div>
+                <div class="text-gray-500">{{ tr.nombres }}</div>
+              </td>
+              <td class="px-6 py-4 text-gray-700 truncate max-w-xs" title="{{ tr.cargo_estructura_nivel }}">
+                {{ tr.cargo_estructura_nivel }}
+              </td>
+              <td class="px-6 py-4">
+                <span class="block text-xs text-gray-500 font-semibold mb-0.5">{{ tr.condicion_laboral || '-' }}</span>
+                <span class="block text-sm text-gray-800 font-bold truncate max-w-[200px]" title="{{ tr.sede_actual }}">{{ tr.sede_actual || '-' }}</span>
+              </td>
+              <td class="px-6 py-4 text-center">
+                <span *ngIf="tr.ya_registro" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                  Completado
+                </span>
+                <span *ngIf="!tr.ya_registro" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                  Pendiente
+                </span>
+              </td>
+              <td class="px-6 py-4 text-center">
+                <div class="flex items-center justify-center gap-3">
+                  <span class="font-extrabold text-gray-700 text-base">{{ extraerCantidadHijos(tr) }}</span>
+                  <button *ngIf="extraerCantidadHijos(tr) > 0" (click)="toggleHijos(tr)"
+                    class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-200 hover:border-transparent px-3 py-1.5 rounded text-xs font-bold transition-all min-w-[100px]">
+                    {{ tr.mostrarHijos ? 'Ocultar ▲' : 'Ver Detalles ▼' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="tr.mostrarHijos && extraerCantidadHijos(tr) > 0" class="bg-gray-50 border-b border-gray-200">
+              <td colspan="6" class="px-8 py-5">
+
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                  <table class="min-w-full text-sm text-left whitespace-nowrap">
+                    <thead class="bg-gray-100 text-gray-600">
+                      <tr>
+                        <th class="px-4 py-3 font-bold border-b">Nombres y Apellidos del Hijo</th>
+                        <th class="px-4 py-3 font-bold border-b text-center">Edad</th>
+                        <th class="px-4 py-3 font-bold border-b">Beca</th>
+                        <th class="px-4 py-3 font-bold border-b">Discapacidad</th>
+                        <th class="px-4 py-3 font-bold border-b">Pueblo Indígena</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                      <tr *ngFor="let hijo of tr.hijos" class="hover:bg-gray-50">
+                        <td class="px-4 py-3 font-medium text-gray-800">{{ hijo.nombres_apellidos_hijo }}</td>
+                        <td class="px-4 py-3 font-bold text-blue-600 text-center">{{ hijo.edad }}</td>
+                        <td class="px-4 py-3 text-gray-600">
+                          <span [ngClass]="hijo.tiene_beca === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.tiene_beca }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-gray-600">
+                          <span [ngClass]="hijo.discapacidad === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.discapacidad }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-gray-600">
+                          <span [ngClass]="hijo.pueblo_indigena === 'NO' ? 'text-gray-400' : 'font-semibold text-gray-800'">{{ hijo.pueblo_indigena }}</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </td>
+            </tr>
+
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50 gap-4">
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <span>Mostrando</span>
+        <strong class="text-gray-800">{{ registrosInicio }}-{{ registrosFin }}</strong>
+        <span>de</span>
+        <strong class="text-gray-800">{{ listaTrabajadoresAdmin.length }}</strong>
+        <span>registros</span>
+        <span class="mx-2 text-gray-300">|</span>
+        <span>Mostrar</span>
+        <select [value]="registrosPorPagina" (change)="onCambiarRegistrosPorPagina($event)" class="rounded border-gray-300 text-sm px-2 py-1 focus:ring-blue-500 outline-none">
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-1" *ngIf="totalPaginas > 1">
+        <button (click)="paginaAnterior()" [disabled]="paginaActual === 1"
+          class="px-3 py-1.5 text-sm font-medium rounded-lg border transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-gray-300 text-gray-600 hover:bg-gray-100">
+          &laquo;
+        </button>
+
+        <button *ngFor="let p of paginasVisibles" (click)="irAPagina(p)"
+          [class]="p === paginaActual
+            ? 'px-3 py-1.5 text-sm font-bold rounded-lg border border-blue-600 bg-blue-600 text-white shadow-sm'
+            : 'px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-100'">
+          {{ p }}
+        </button>
+
+        <button (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas"
+          class="px-3 py-1.5 text-sm font-medium rounded-lg border transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-white border-gray-300 text-gray-600 hover:bg-gray-100">
+          &raquo;
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

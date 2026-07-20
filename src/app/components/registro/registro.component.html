@@ -1,0 +1,214 @@
+<div class="min-h-screen flex flex-col items-center py-10 px-4">
+
+  <div class="w-full max-w-3xl mb-6 text-center">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 tracking-tight">UGEL Angaraes</h1>
+    <p class="text-lg text-gray-600 mt-2 font-medium">Padrón de Beneficiarios - PRONABEC</p>
+  </div>
+
+  <div class="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+
+    <div class="flex justify-end p-4 bg-gray-50 border-b border-gray-100">
+      <button (click)="irALogin()" class="text-xs text-gray-500 hover:text-blue-600 transition-colors font-semibold flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        Acceso Institucional
+      </button>
+    </div>
+
+    <div class="p-6 md:p-8">
+
+      <div class="mb-8">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Ingrese el DNI del Trabajador:</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input type="text" [(ngModel)]="dniBusqueda" placeholder="Ej: 09951386" maxlength="8" pattern="\d{8}"
+            class="flex-1 rounded-lg border-gray-300 shadow-sm px-4 py-3 border focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-700">
+          <button (click)="buscar()" [disabled]="cargando || dniBusqueda.length !== 8"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all disabled:opacity-50 flex justify-center items-center">
+            {{ cargando ? 'Buscando...' : 'Buscar Trabajador' }}
+          </button>
+        </div>
+        <div *ngIf="mensajeError" class="mt-3 text-sm text-red-600 font-medium flex items-center gap-1">
+          {{ mensajeError }}
+        </div>
+      </div>
+
+      <div *ngIf="trabajador" class="animate-fade-in-up">
+        <div class="bg-blue-50 rounded-lg p-5 border border-blue-100 mb-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-3 border-b border-blue-200 pb-2">Datos del Trabajador</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div><span class="text-gray-500 block">Nombres y Apellidos:</span> <span class="font-semibold text-gray-800">{{ trabajador.nombres }} {{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }}</span></div>
+            <div><span class="text-gray-500 block">Cargo:</span> <span class="font-semibold text-gray-800">{{ trabajador.cargo_estructura_nivel }}</span></div>
+          </div>
+        </div>
+
+        <div *ngIf="trabajador.ya_registro" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-6 text-yellow-800">
+          <strong class="font-bold">Aviso:</strong> Usted ya completó su registro anteriormente.
+        </div>
+
+        <div *ngIf="!trabajador.ya_registro && !registroRecienCompletado">
+
+          <div class="bg-gray-50 p-5 md:p-6 rounded-xl border border-gray-200 mb-8 shadow-sm">
+            <h4 class="text-md font-bold text-gray-800 mb-4 border-b pb-2">Complete sus datos laborales:</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Condición Laboral:</label>
+                <select [(ngModel)]="condicionLaboral" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                  <option value="">-- Seleccione --</option>
+                  <option value="NOMBRADO">NOMBRADO</option>
+                  <option value="CONTRATADO">CONTRATADO</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sede / Institución:</label>
+                <select [(ngModel)]="tipoSede" class="w-full rounded-lg border-gray-300 bg-white px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                  <option value="Sede Administrativa">Sede Administrativa</option>
+                  <option value="Institución Educativa">Institución Educativa</option>
+                </select>
+              </div>
+              <div *ngIf="tipoSede === 'Institución Educativa'" class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la Institución Educativa (IE):</label>
+                <input type="text" [(ngModel)]="nombreIE" placeholder="Ej: I.E. San Juan Bosco"
+                  class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-8 flex flex-wrap items-center bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <label class="font-bold text-gray-800 mr-4">¿Cuántos hijos tiene entre 14 y 23 años?</label>
+            <input type="number" min="0" max="10" [(ngModel)]="cantidadHijos" (ngModelChange)="generarFormularios()"
+              class="w-20 rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-center font-bold text-lg" />
+          </div>
+
+          <div *ngIf="cantidadHijos > 0" class="space-y-6">
+            <div *ngFor="let hijo of hijosForm; let i = index" class="bg-white border border-gray-200 rounded-xl p-5 md:p-6 shadow-sm relative overflow-hidden">
+              <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+
+              <h4 class="text-lg font-bold text-blue-800 mb-5 pb-2 border-b">Datos del Hijo {{ i + 1 }}</h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombres y Apellidos:</label>
+                  <input type="text" [(ngModel)]="hijo.nombres_apellidos_hijo" class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Edad:</label>
+                  <select [(ngModel)]="hijo.edad" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="" disabled>Edad</option>
+                    <option *ngFor="let e of edades" [value]="e">{{ e }}</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Grado de Estudios:</label>
+                  <select [(ngModel)]="hijo.grado_estudios" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="Secundaria">Secundaria</option>
+                    <option value="Superior No Universitaria">Superior No Universitaria</option>
+                    <option value="Superior Universitaria">Superior Universitaria</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tipo Gestión IE:</label>
+                  <select [(ngModel)]="hijo.tipo_gestion_ie" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="Pública">Pública</option>
+                    <option value="Privada">Privada</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Clasificación SISFOH:</label>
+                  <select [(ngModel)]="hijo.sisfoh" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="No Pobre">No Pobre</option>
+                    <option value="Pobre">Pobre</option>
+                    <option value="Pobre Extremo">Pobre Extremo</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">¿Cuenta con Beca?</label>
+                  <select
+                    [(ngModel)]="hijo.tiene_beca_opcion"
+                    (change)="hijo.tiene_beca = hijo.tiene_beca_opcion === 'NO' ? 'NO' : ''"
+                    class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="NO">NO</option>
+                    <option value="SI">SI</option>
+                  </select>
+                  <input
+                    *ngIf="hijo.tiene_beca_opcion === 'SI'"
+                    type="text"
+                    [(ngModel)]="hijo.tiene_beca"
+                    placeholder="Especifique nombre de beca"
+                    class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">¿Discapacidad?</label>
+                  <select
+                    [(ngModel)]="hijo.discapacidad_opcion"
+                    (change)="hijo.discapacidad = hijo.discapacidad_opcion === 'NO' ? 'NO' : ''"
+                    class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="NO">NO</option>
+                    <option value="SI">SI</option>
+                  </select>
+                  <input
+                    *ngIf="hijo.discapacidad_opcion === 'SI'"
+                    type="text"
+                    [(ngModel)]="hijo.discapacidad"
+                    placeholder="Especifique discapacidad"
+                    class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">¿Pueblo Indígena?</label>
+                  <select
+                    [(ngModel)]="hijo.pueblo_indigena_opcion"
+                    (change)="hijo.pueblo_indigena = hijo.pueblo_indigena_opcion === 'NO' ? 'NO' : ''"
+                    class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                    <option value="NO">NO</option>
+                    <option value="SI">SI</option>
+                  </select>
+                  <input
+                    *ngIf="hijo.pueblo_indigena_opcion === 'SI'"
+                    type="text"
+                    [(ngModel)]="hijo.pueblo_indigena"
+                    placeholder="Especifique pueblo"
+                    class="mt-2 w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-fade-in-up" />
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex justify-end" *ngIf="cantidadHijos >= 0">
+            <button (click)="guardarRegistro()" [disabled]="guardando"
+              class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all disabled:opacity-50 text-lg w-full md:w-auto flex justify-center items-center">
+              {{ guardando ? 'Guardando información...' : 'Finalizar Registro' }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="mensajeExito" class="mt-6 bg-green-50 border border-green-200 text-green-800 p-5 rounded-lg text-center shadow-sm animate-fade-in-up">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <strong class="block text-lg">{{ mensajeExito }}</strong>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="mostrarModalNoEncontrado" class="fixed inset-0 z-50 flex items-center justify-center p-4" (click)="cerrarModal()">
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center transform transition-all" (click)="$event.stopPropagation()">
+    <div class="mx-auto mb-5 w-20 h-20 flex items-center justify-center rounded-full bg-red-100 animate-pulse">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+      </svg>
+    </div>
+    <h3 class="text-xl font-extrabold text-gray-800 mb-2">DNI no encontrado</h3>
+    <p class="text-gray-500 text-sm mb-6">El DNI <strong class="text-gray-700">{{ dniBusqueda }}</strong> no se encuentra registrado en el padrón.</p>
+    <button (click)="cerrarModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all">
+      Entendido
+    </button>
+  </div>
+</div>
