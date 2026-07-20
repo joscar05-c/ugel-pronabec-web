@@ -104,7 +104,10 @@ import * as XLSX from 'xlsx';
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">Edad:</label>
-                      <input type="number" min="14" max="23" [(ngModel)]="hijo.edad" class="w-full rounded-lg border-gray-300 px-3 py-2 border focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
+                      <select [(ngModel)]="hijo.edad" class="w-full rounded-lg border-gray-300 px-3 py-2 border bg-white focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <option value="" disabled>Edad</option>
+                        <option *ngFor="let e of edades" [value]="e">{{ e }}</option>
+                      </select>
                     </div>
                     <div>
                       <label class="block text-sm font-medium text-gray-700 mb-1">Grado de Estudios:</label>
@@ -205,6 +208,23 @@ import * as XLSX from 'xlsx';
 
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL: DNI NO ENCONTRADO -->
+    <div *ngIf="mostrarModalNoEncontrado" class="fixed inset-0 z-50 flex items-center justify-center p-4" (click)="cerrarModal()">
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center transform transition-all" (click)="$event.stopPropagation()">
+        <div class="mx-auto mb-5 w-20 h-20 flex items-center justify-center rounded-full bg-red-100 animate-pulse">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-extrabold text-gray-800 mb-2">DNI no encontrado</h3>
+        <p class="text-gray-500 text-sm mb-6">El DNI <strong class="text-gray-700">{{ dniBusqueda }}</strong> no se encuentra registrado en el padrón.</p>
+        <button (click)="cerrarModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all">
+          Entendido
+        </button>
       </div>
     </div>
 
@@ -414,6 +434,9 @@ export class AppComponent implements OnInit {
 
   cantidadHijos: number = 0;
   hijosForm: any[] = [];
+  edades = Array.from({ length: 10 }, (_, i) => i + 14);
+
+  mostrarModalNoEncontrado: boolean = false;
 
   emailAdmin: string = '';
   passwordAdmin: string = '';
@@ -516,6 +539,10 @@ export class AppComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  cerrarModal() {
+    this.mostrarModalNoEncontrado = false;
+  }
+
   async buscar() {
     if (!this.dniBusqueda.trim()) return;
     this.cargando = true;
@@ -531,9 +558,15 @@ export class AppComponent implements OnInit {
 
     try {
       const { data, error } = await this.supabaseService.buscarTrabajador(this.dniBusqueda);
-      if (error) this.mensajeError = 'Error al buscar.';
-      else if (!data) this.mensajeError = 'No se encontró ningún trabajador.';
-      else this.trabajador = data;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          this.mostrarModalNoEncontrado = true;
+        } else {
+          this.mensajeError = 'Error al buscar.';
+        }
+      } else {
+        this.trabajador = data;
+      }
     } catch (err) {
       this.mensajeError = 'Error de conexión.';
     } finally {
@@ -655,7 +688,7 @@ export class AppComponent implements OnInit {
 
     this.listaTrabajadoresAdmin.forEach(tr => {
       const tieneHijos = tr.hijos && tr.hijos.length > 0;
-      
+
       if (tieneHijos) {
         tr.hijos.forEach((hijo: any) => {
           // Lógica para formatear los campos SI/NO
@@ -706,7 +739,7 @@ export class AppComponent implements OnInit {
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosPlanos);
     ws['!cols'] = [
-      { wch: 15 }, { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 30 }, 
+      { wch: 15 }, { wch: 25 }, { wch: 30 }, { wch: 40 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 30 },
       { wch: 40 }, { wch: 12 }, { wch: 20 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }
     ];
 
